@@ -1,0 +1,64 @@
+stages:
+  - build-stage
+  - build-saas
+  - deploy-stage
+
+image: "docker:20"
+
+variables:
+
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  GIT_STRATEGY: clone
+  CI_REGISTRY_USER: $REGISTER_GIT_USER
+  CI_REGISTRY_PASSWORD: $REGISTER_GIT_TOKEN
+  IMAGE_TAG: $CI_PIPELINE_ID-$CI_COMMIT_SHORT_SHA
+  IMAGE_NAME: $REG_URL/hamsaa-stage-front-admin:$IMAGE_TAG
+  IMAGE_STAGE_LTS: $REG_URL/hamsaa-stage-front-admin:latest
+  IMAGE_SAAS_LTS: $REG_URL/hamsaa-saas-front-admin:latest
+  CLUSTER_ADDRESS: $CLUSTER_ADDRESS
+  SERVICE_ID: $SERVICE_ID
+  TARGET_SERVICE_NAME: $TARGET_SERVICE_NAME
+  TARGET_IMAGE_NAME: $TARGET_IMAGE_NAME
+  TARGET_NAME_SPACE: $TARGET_NAME_SPACE
+  TARGET_ALIAS: $TARGET_ALIAS
+  TARGET_NETWORK_ID: $TARGET_NETWORK_ID
+  CLUSTER_TOKEN: $CLUSTER_TOKEN
+
+services:
+  - docker:20.10.16-dind
+
+
+
+
+build-stage:
+  stage: build-stage
+  before_script:
+    - echo "$REG_PASS" | docker login $REG_URL -u $REG_USER --password-stdin
+  script:
+    - echo "$ENV_FILE_CONTENT" > .env.stage
+    - docker build --build-arg TARGET_ENV=stage -t $IMAGE_STAGE_LTS .
+    - docker push $IMAGE_STAGE_LTS
+    - echo "IMAGE IS= $IMAGE_STAGE_LTS"
+
+build-saas:
+  stage: build-saas
+  when: manual
+  before_script:
+    - echo "$REG_PASS" | docker login $REG_URL -u $REG_USER --password-stdin
+  script:
+    - echo "$SAAS_ENV_FILE_CONTENT" > .env.saas
+    - docker build --build-arg TARGET_ENV=saas -t $IMAGE_SAAS_LTS .
+    - docker push $IMAGE_SAAS_LTS
+    - echo "IMAGE IS= $IMAGE_SAAS_LTS"
+
+deploy-stage:
+  stage: deploy-stage
+  when: manual
+  image: node:18-alpine # Using a Node.js image to run the script
+  before_script:
+    # Install dependencies
+    - npm install axios
+  script:
+    # Run the asyncRequests.js script
+    - node ./cd.js
