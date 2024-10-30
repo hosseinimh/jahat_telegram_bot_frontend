@@ -12,6 +12,7 @@
     "crypto-js": "^4.2.0",
     "es6-easings": "^1.1.0",
     "es6-slide-up-down": "^1.0.0",
+    "flowbite-react": "^0.10.2",
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.0",
     "npm": "^10.8.2",

@@ -15,7 +15,7 @@ import WarningLabel from "./ui/Label/WarningLabel";
 import YellowLabel from "./ui/Label/YellowLabel";
 import SidebarLink from "./ui/Link/SidebarLink";
 import Loading from "./ui/Loading/Loading";
-import Sidebar from "./ui/Sidebar/Sidebar";
+import TextLoading from "./ui/Loading/TextLoading";
 
 // form
 import Button from "./form/Button/Button";
@@ -67,8 +67,8 @@ export {
   WarningLabel,
   YellowLabel,
   Loading,
+  TextLoading,
   SidebarLink,
-  Sidebar,
 
   // form
   Button,

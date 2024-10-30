@@ -13,7 +13,7 @@ const AppRoutes = () => {
   return (
     <Router basename={ENV.homePage}>
       <Routes>
-        <Route path={`/`} element={<PAGE_COMPONENTS.DashboardPage />} />
+        <Route path={`/:groupId`} element={<PAGE_COMPONENTS.DashboardPage />} />
         <Route path="*" element={<Navigate to={`/errors/404`} />} />
       </Routes>
     </Router>

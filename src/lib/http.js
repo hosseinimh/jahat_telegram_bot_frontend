@@ -38,8 +38,6 @@ const handleResponse = (response) => {
     }
 
     if (response.data.result !== "1") {
-      navigateIfNotPrivilleged(response.data.resultCode);
-
       return createErrorResponse(
         response.data.resultCode,
         response.data.resultMessage,
@@ -70,17 +68,6 @@ const handleError = (error) => {
     API_RESPONSE_CODES.CLIENT_ERROR,
     general.unknownError
   );
-};
-
-const navigateIfNotPrivilleged = (resultCode) => {
-  if (resultCode === API_RESPONSE_CODES.TOKEN_EXPIRED) {
-    logout();
-    setTimeout(() => {
-      window.location.href = ENV.loginPage;
-    }, 2000);
-  } else if (resultCode === API_RESPONSE_CODES.ADMIN_NOT_AUTHORIZED) {
-    history.back();
-  }
 };
 
 const logout = () => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import utils from "../../../utils";
-import { usePage } from "../../../hooks";
+import { usePage, usePageParams } from "../../../hooks";
 import { API_RESULT_CODES, PAGES } from "../../../types";
 import { useAppContext } from "../../../store";
 import { dashboardApi } from "../api";
@@ -18,57 +18,79 @@ const useDashboardPage = () => {
   const [expressionChart, setExpressionChart] = useState({});
   const [sentimentChart, setSentimentChart] = useState({});
   const [distributionChart, setDistributionChart] = useState({});
-  const { dashboardPage: strings } = utils.getLSLocale();
+  const { dashboardPage: strings, general } = utils.getLSLocale();
 
   usePage(PAGES.Dashboard);
 
+  try {
+    var { groupId } = usePageParams(["groupId"]);
+  } catch {
+    utils.showErrorMessage(dispatch, general.itemNotFound);
+
+    return;
+  }
+
   useEffect(() => {
+    if (!groupId) {
+      utils.showErrorMessage(dispatch, general.itemNotFound);
+
+      return;
+    }
+
     fetchItems();
-  }, []);
+  }, [groupId]);
 
   const fetchItems = async (formData) => {
     const response = await utils.postWithLoading(
       dispatch,
-      dashboardApi.fetchInfo()
+      dashboardApi.fetchInfo(groupId)
     );
 
     if (response.result === API_RESULT_CODES.OK) {
-      const illocutionaryLabels = response.resultData?.illocutionaries
+      const illocutionaryLabels =
+        response.resultData?.countTags?.countIllocutionaryTags
+          ?.filter((item) => item.count > 0)
+          ?.map((item) => item.tag);
+      const illocutionarySeries =
+        response.resultData?.countTags?.countIllocutionaryTags
+          ?.filter((item) => item.count > 0)
+          ?.map((item) => item.count);
+      const locutionaryLabels =
+        response.resultData?.countTags?.countLocutionaryTags
+          ?.filter((item) => item.count > 0)
+          ?.map((item) => item.tag);
+      const locutionarySeries =
+        response.resultData?.countTags?.countLocutionaryTags
+          ?.filter((item) => item.count > 0)
+          ?.map((item) => item.count);
+      const searleLabels = response.resultData?.countTags?.countSearleTags
         ?.filter((item) => item.count > 0)
         ?.map((item) => item.tag);
-      const illocutionarySeries = response.resultData?.illocutionaries
+      const searleSeries = response.resultData?.countTags?.countSearleTags
         ?.filter((item) => item.count > 0)
         ?.map((item) => item.count);
-      const locutionaryLabels = response.resultData?.locutionaries
+      const expressionLabels =
+        response.resultData?.countTags?.countExpressionTags
+          ?.filter((item) => item.count > 0)
+          ?.map((item) => item.tag);
+      const expressionSeries =
+        response.resultData?.countTags?.countExpressionTags
+          ?.filter((item) => item.count > 0)
+          ?.map((item) => item.count);
+      const sentimentLabels = response.resultData?.countTags?.countSentimentTags
         ?.filter((item) => item.count > 0)
         ?.map((item) => item.tag);
-      const locutionarySeries = response.resultData?.locutionaries
+      const sentimentSeries = response.resultData?.countTags?.countSentimentTags
         ?.filter((item) => item.count > 0)
         ?.map((item) => item.count);
-      const searleLabels = response.resultData?.searles
-        ?.filter((item) => item.count > 0)
-        ?.map((item) => item.tag);
-      const searleSeries = response.resultData?.searles
-        ?.filter((item) => item.count > 0)
-        ?.map((item) => item.count);
-      const expressionLabels = response.resultData?.expressions
-        ?.filter((item) => item.count > 0)
-        ?.map((item) => item.tag);
-      const expressionSeries = response.resultData?.expressions
-        ?.filter((item) => item.count > 0)
-        ?.map((item) => item.count);
-      const sentimentLabels = response.resultData?.sentiments
-        ?.filter((item) => item.count > 0)
-        ?.map((item) => item.tag);
-      const sentimentSeries = response.resultData?.sentiments
-        ?.filter((item) => item.count > 0)
-        ?.map((item) => item.count);
-      const distributionLabels = response.resultData?.distributions
-        ?.filter((item) => item.count > 0)
-        ?.map((item) => item.tag);
-      const distributionSeries = response.resultData?.distributions
-        ?.filter((item) => item.count > 0)
-        ?.map((item) => item.count);
+      const distributionLabels =
+        response.resultData?.countTags?.countDistributionTags
+          ?.filter((item) => item.count > 0)
+          ?.map((item) => item.tag);
+      const distributionSeries =
+        response.resultData?.countTags?.countDistributionTags
+          ?.filter((item) => item.count > 0)
+          ?.map((item) => item.count);
 
       setIllocutionaryChart({
         series: illocutionarySeries,
