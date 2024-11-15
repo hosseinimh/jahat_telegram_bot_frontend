@@ -47,6 +47,12 @@ const useDashboardPage = () => {
     );
 
     if (response.result === API_RESULT_CODES.OK) {
+      const searleLabels = response.resultData?.countTags?.countSearleTags
+        ?.filter((item) => item.count > 0)
+        ?.map((item) => item.tag);
+      const searleSeries = response.resultData?.countTags?.countSearleTags
+        ?.filter((item) => item.count > 0)
+        ?.map((item) => item.count);
       const illocutionaryLabels =
         response.resultData?.countTags?.countIllocutionaryTags
           ?.filter((item) => item.count > 0)
@@ -63,12 +69,14 @@ const useDashboardPage = () => {
         response.resultData?.countTags?.countLocutionaryTags
           ?.filter((item) => item.count > 0)
           ?.map((item) => item.count);
-      const searleLabels = response.resultData?.countTags?.countSearleTags
-        ?.filter((item) => item.count > 0)
-        ?.map((item) => item.tag);
-      const searleSeries = response.resultData?.countTags?.countSearleTags
-        ?.filter((item) => item.count > 0)
-        ?.map((item) => item.count);
+      const distributionLabels =
+        response.resultData?.countTags?.countDistributionTags
+          ?.filter((item) => item.count > 0)
+          ?.map((item) => item.tag);
+      const distributionSeries =
+        response.resultData?.countTags?.countDistributionTags
+          ?.filter((item) => item.count > 0)
+          ?.map((item) => item.count);
       const expressionLabels =
         response.resultData?.countTags?.countExpressionTags
           ?.filter((item) => item.count > 0)
@@ -83,15 +91,30 @@ const useDashboardPage = () => {
       const sentimentSeries = response.resultData?.countTags?.countSentimentTags
         ?.filter((item) => item.count > 0)
         ?.map((item) => item.count);
-      const distributionLabels =
-        response.resultData?.countTags?.countDistributionTags
-          ?.filter((item) => item.count > 0)
-          ?.map((item) => item.tag);
-      const distributionSeries =
-        response.resultData?.countTags?.countDistributionTags
-          ?.filter((item) => item.count > 0)
-          ?.map((item) => item.count);
-
+      console.log(expressionLabels, expressionSeries);
+      setSearleChart({
+        series: searleSeries,
+        options: {
+          chart: {
+            width: 380,
+            type: "pie",
+          },
+          labels: searleLabels,
+          responsive: [
+            {
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 300,
+                },
+                legend: {
+                  position: "bottom",
+                },
+              },
+            },
+          ],
+        },
+      });
       setIllocutionaryChart({
         series: illocutionarySeries,
         options: {
@@ -105,7 +128,7 @@ const useDashboardPage = () => {
               breakpoint: 480,
               options: {
                 chart: {
-                  width: 200,
+                  width: 300,
                 },
                 legend: {
                   position: "bottom",
@@ -128,7 +151,7 @@ const useDashboardPage = () => {
               breakpoint: 480,
               options: {
                 chart: {
-                  width: 200,
+                  width: 300,
                 },
                 legend: {
                   position: "bottom",
@@ -136,74 +159,6 @@ const useDashboardPage = () => {
               },
             },
           ],
-        },
-      });
-      setSearleChart({
-        series: searleSeries,
-        options: {
-          chart: {
-            width: 380,
-            type: "pie",
-          },
-          labels: searleLabels,
-          responsive: [
-            {
-              breakpoint: 480,
-              options: {
-                chart: {
-                  width: 200,
-                },
-                legend: {
-                  position: "bottom",
-                },
-              },
-            },
-          ],
-        },
-      });
-      setExpressionChart({
-        series: expressionSeries,
-        options: {
-          chart: {
-            width: 380,
-            type: "pie",
-          },
-          labels: expressionLabels,
-          responsive: [
-            {
-              breakpoint: 480,
-              options: {
-                chart: {
-                  width: 200,
-                },
-                legend: {
-                  position: "bottom",
-                },
-              },
-            },
-          ],
-        },
-      });
-      setSentimentChart({
-        series: [{ data: sentimentSeries }],
-        options: {
-          chart: {
-            width: 380,
-            type: "bar",
-          },
-          plotOptions: {
-            bar: {
-              borderRadius: 4,
-              borderRadiusApplication: "end",
-              horizontal: true,
-            },
-          },
-          dataLabels: {
-            enabled: false,
-          },
-          xaxis: {
-            categories: sentimentLabels,
-          },
         },
       });
       setDistributionChart({
@@ -276,6 +231,51 @@ const useDashboardPage = () => {
               opacityTo: 0.85,
               stops: [50, 0, 100],
             },
+          },
+        },
+      });
+      setExpressionChart({
+        series: expressionSeries,
+        options: {
+          chart: {
+            width: 380,
+            type: "pie",
+          },
+          labels: expressionLabels,
+          responsive: [
+            {
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 300,
+                },
+                legend: {
+                  position: "bottom",
+                },
+              },
+            },
+          ],
+        },
+      });
+      setSentimentChart({
+        series: [{ data: sentimentSeries }],
+        options: {
+          chart: {
+            width: 380,
+            type: "bar",
+          },
+          plotOptions: {
+            bar: {
+              borderRadius: 4,
+              borderRadiusApplication: "end",
+              horizontal: true,
+            },
+          },
+          dataLabels: {
+            enabled: false,
+          },
+          xaxis: {
+            categories: sentimentLabels,
           },
         },
       });
